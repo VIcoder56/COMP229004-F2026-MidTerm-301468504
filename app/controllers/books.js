@@ -62,7 +62,10 @@ module.exports.update = async function (req, res, next) {
         updatedBook._id = req.params.id;
 
         // Submit the change
-        let result = await BookModel.updateOne({ _id: req.params.id });
+        let result = await BookModel.updateOne(
+            { _id: req.params.id },
+            { $set: { ...req.body } },
+        );
         console.log("Result: ", result);
 
         // Handle the result: send a response.
