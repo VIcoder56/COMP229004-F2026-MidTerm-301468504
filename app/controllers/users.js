@@ -1,52 +1,56 @@
-let UsersModel = require('../models/users');
+let UsersModel = require("../models/users");
 
 module.exports.usersList = async function (req, res, next) {
-
     try {
         // Retrieves a list of users from the DB and waits for the result.
-        // Add your code here to retrieve the list of users from the database using the UsersModel.        
-
+        // Add your code here to retrieve the list of users from the database using the UsersModel.
         // If the list is empty, throw an error. Otherwise, return the list as a JSON response.
     } catch (error) {
         console.log(error);
         next(error);
     }
-
-}
+};
 
 module.exports.getByID = async function (req, res, next) {
     try {
         let user = await UsersModel.findOne({ _id: req.params.id });
-        if (!user)
-            throw new Error('User not found. Are you sure it exists?') 
-        
+        if (!user) throw new Error("User not found. Are you sure it exists?");
+
         res.json({
             success: true,
             message: "User retrieved successfully.",
-            data: user
+            data: user,
         });
-        
     } catch (error) {
         console.log(error);
         next(error);
     }
-}
+};
 
 module.exports.processAdd = async (req, res, next) => {
     try {
- 
-        // Builds a new user from the values of the body of the request.
-        // Add your code here to create a new user object using the UsersModel and the data from req.body
+        // Get input from the request
+        let user = req.body;
 
+        // Insert into the DB
+        let result = await UsersModel.create(user);
+        console.log("Result: ", result);
+
+        // Send a response
+        res.status(200);
+        res.json({
+            success: true,
+            message: "User created successfully.",
+            data: result,
+        });
     } catch (error) {
         console.log(error);
         next(error);
     }
-}
+};
 
 module.exports.processEdit = async (req, res, next) => {
     try {
-
         let id = req.params.id;
 
         // Builds updatedUser from the values of the body of the request.
@@ -59,28 +63,21 @@ module.exports.processEdit = async (req, res, next) => {
 
         // If the user is updated redirects to the list
         if (result.modifiedCount > 0) {
-            res.json(
-                {
-                    success: true,
-                    message: "User updated successfully."
-                }
-            );
-        }
-        else {
+            res.json({
+                success: true,
+                message: "User updated successfully.",
+            });
+        } else {
             // Express will catch this on its own.
-            throw new Error('User not udated. Are you sure it exists?')
+            throw new Error("User not udated. Are you sure it exists?");
         }
-
     } catch (error) {
-        next(error)
+        next(error);
     }
-}
-
+};
 
 module.exports.performDelete = async (req, res, next) => {
-
     try {
-
         let id = req.params.id;
 
         let result = await UsersModel.deleteOne({ _id: id });
@@ -88,20 +85,16 @@ module.exports.performDelete = async (req, res, next) => {
         console.log("====> Result: ", result);
         if (result.deletedCount > 0) {
             // refresh the book list
-            res.json(
-                {
-                    success: true,
-                    message: "User deleted successfully."
-                }
-            )
-        }
-        else {
+            res.json({
+                success: true,
+                message: "User deleted successfully.",
+            });
+        } else {
             // Express will catch this on its own.
-            throw new Error('User not deleted. Are you sure it exists?')
+            throw new Error("User not deleted. Are you sure it exists?");
         }
-
     } catch (error) {
         console.log(error);
         next(error);
     }
-}
+};
